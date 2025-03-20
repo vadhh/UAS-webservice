@@ -22,7 +22,17 @@ class ProdukController extends AdminController
             'nama' => 'required',
             'kat_id' => 'required|exists:kategori,kategori',  
             'harga' => 'required|numeric',
-            'gambar' => 'nullable|image|max:2048',
+            'gambar' => [
+                'nullable',
+                'url',
+                function ($attribute, $value, $fail) {
+                    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+                    $extension = pathinfo(parse_url($value, PHP_URL_PATH), PATHINFO_EXTENSION);
+                    if (!in_array(strtolower($extension), $allowedExtensions)) {
+                        $fail('The ' . $attribute . ' must be a valid image URL with extensions: ' . implode(', ', $allowedExtensions));
+                    }
+                },
+            ],
         ]);
 
         $filePath = null;
